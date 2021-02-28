@@ -1,17 +1,24 @@
 package gameboard;
 
+import tiles.FoodTile;
 import tiles.Tile;
+import tiles.ObstacleTile;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class GameBoard extends JFrame implements MouseListener {
+    private Tile[][] tileCollection = new Tile[8][16];
     public GameBoard(){
+        foodTileSetUp();
+        trapTileSetUp();
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(800,400);
         this.setVisible(true);
+        this.addMouseListener(this);
     }
     /**
      * method which paints all the tiles/
@@ -20,9 +27,12 @@ public class GameBoard extends JFrame implements MouseListener {
     @Override
     public void paint(Graphics g){
         backgroundSetUp(g);
+        tileRenderer(g);
     }
     @Override
     public void mouseClicked(MouseEvent e) {
+        int row = this.getBoardCoordinates(e.getY());
+        int col = this.getBoardCoordinates(e.getX());
 
     }
 
@@ -62,6 +72,53 @@ public class GameBoard extends JFrame implements MouseListener {
                     tile = new Tile(row, col, Color.GRAY);
                 }
                 tile.render(g);
+            }
+        }
+    }
+
+    private void trapTileSetUp(){
+        for(int i = 0; i<8;i++) {
+                int randomRow = ThreadLocalRandom.current().nextInt(0,8);
+                int randomCol = ThreadLocalRandom.current().nextInt(0,16);
+                if(tileCollection[randomRow][randomCol] == null){
+                    ObstacleTile tile = new ObstacleTile(randomRow,randomCol,Color.RED);
+                    tileCollection[randomRow][randomCol]= tile;
+                } else {
+                    i--;
+                }
+        }
+    }
+
+    private void foodTileSetUp(){
+        for(int i = 0; i<8;i++) {
+            int randomRow = ThreadLocalRandom.current().nextInt(0,8);
+            int randomCol = ThreadLocalRandom.current().nextInt(0,16);
+            if(tileCollection[randomRow][randomCol] == null){
+                FoodTile tile = new FoodTile(randomRow,randomCol,Color.GREEN);
+                tileCollection[randomRow][randomCol]= tile;
+            } else {
+                i--;
+            }
+        }
+    }
+    private int getBoardCoordinates(int coordinates){
+        return  coordinates/50;
+    }
+
+    private boolean hasBoardTile(int row,int col){
+        return this.getBoardTile(row,col) !=null;
+    }
+
+    private Tile getBoardTile(int row, int col){
+        return this.tileCollection[row][col];
+    }
+    private void tileRenderer(Graphics g){
+        for(int row = 0; row<8;row++){
+            for(int col = 0; col < 16; col++ ){
+                if(this.hasBoardTile(row,col)){
+                    Tile tile = getBoardTile(row,col);
+                    tile.render(g);
+                }
             }
         }
     }

@@ -3,9 +3,9 @@ package tiles;
 import java.awt.*;
 
 public class Tile {
-    private int row;
-    private int col;
-    private final Color color;
+    protected int row;
+    protected int col;
+    protected final Color color;
 
 
     /**
