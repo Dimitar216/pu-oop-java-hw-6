@@ -33,4 +33,31 @@ public class Tile {
         g.setColor(this.color);
         g.fillRect(tileX, tileY, widthOfTile, heightOfTile);
     }
+
+    public Color getColor() {
+        return color;
+    }
+    /**
+     * Method which changes the row and col of the figure.
+     * @param row new row of the figure.
+     * @param col new col of the figure.
+     */
+    public void move(int row,int col){
+        this.row = row;
+        this.col = col;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getCol() {
+        return col;
+    }
+    public boolean isMoveValid(int moveRow, int moveCol,Tile[][] figures) {
+        int rowCoefficient =  Math.abs(moveRow-this.row);
+        int colCoefficient =  Math.abs(moveCol - this.col);
+
+        return rowCoefficient == 0 && colCoefficient == 1 || rowCoefficient == 1 && colCoefficient == 0;
+    }
 }
