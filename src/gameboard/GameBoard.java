@@ -1,6 +1,7 @@
 package gameboard;
 
 import tiles.FoodTile;
+import tiles.SnakeTile;
 import tiles.Tile;
 import tiles.ObstacleTile;
 
@@ -13,6 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class GameBoard extends JFrame implements MouseListener {
     private Tile[][] tileCollection = new Tile[8][16];
     public GameBoard(){
+        snakeTileSetUp();
         foodTileSetUp();
         trapTileSetUp();
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -33,7 +35,8 @@ public class GameBoard extends JFrame implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         int row = this.getBoardCoordinates(e.getY());
         int col = this.getBoardCoordinates(e.getX());
-
+        System.out.println(row);
+        System.out.println(col);
     }
 
     @Override
@@ -121,5 +124,9 @@ public class GameBoard extends JFrame implements MouseListener {
                 }
             }
         }
+    }
+    private void snakeTileSetUp(){
+        SnakeTile tile = new SnakeTile(4,7,Color.BLACK);
+        tileCollection[4][7]= tile;
     }
 }
