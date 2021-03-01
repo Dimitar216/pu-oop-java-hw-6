@@ -15,6 +15,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class GameBoard extends JFrame implements MouseListener {
     private final Tile[][] tileCollection = new Tile[8][16];
     private Tile selectedSnake;
+    private int score = 0;
+    private Tile snakeUpdater;
 
     /**
      * Game board constructor.
@@ -24,7 +26,7 @@ public class GameBoard extends JFrame implements MouseListener {
         foodTileSetUp();
         trapTileSetUp();
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setSize(800,400);
+        this.setSize(800,420);
         this.setVisible(true);
         this.addMouseListener(this);
     }
@@ -34,8 +36,12 @@ public class GameBoard extends JFrame implements MouseListener {
      */
     @Override
     public void paint(Graphics g){
+        super.paintComponents(g);
         backgroundSetUp(g);
         tileRenderer(g);
+        String scoreString = "Your score is:"+String.valueOf(score);
+        g.setColor(Color.BLACK);
+        g.drawString(scoreString,355,410);
     }
     /**
      * Method where movement of the snake is realized through mouse input.
@@ -103,7 +109,7 @@ public class GameBoard extends JFrame implements MouseListener {
      * Method that sets up traps randomly.
      */
     private void trapTileSetUp(){
-        for(int i = 0; i<8;i++) {
+        for(int i = 0; i<16;i++) {
                 int randomRow = ThreadLocalRandom.current().nextInt(0,8);
                 int randomCol = ThreadLocalRandom.current().nextInt(0,16);
                 if(tileCollection[randomRow][randomCol] == null){
@@ -119,7 +125,7 @@ public class GameBoard extends JFrame implements MouseListener {
      * Method that sets up food randomly.
      */
     private void foodTileSetUp(){
-        for(int i = 0; i<8;i++) {
+        for(int i = 0; i<21;i++) {
             int randomRow = ThreadLocalRandom.current().nextInt(0,8);
             int randomCol = ThreadLocalRandom.current().nextInt(0,16);
             if(tileCollection[randomRow][randomCol] == null){
@@ -201,24 +207,83 @@ public class GameBoard extends JFrame implements MouseListener {
      * Method where the movement of the snake is realized.
      * @param row row of the snake.
      * @param col col of the snake.
-     * @param guard snake object.
+     * @param snake snake object.
      */
     private void isSnakeMoveValid(int row, int col, Tile snake){
         if(snake.isMoveValid(row,col,this.tileCollection)){
-            if(this.tileCollection[row][col] == null) {
-                int initialRow = snake.getRow();
-                int initialCol = snake.getCol();
+            gameEndChecker(row,col);
+            int initialRow = snake.getRow();
+            int initialCol = snake.getCol();
 
-                snake.move(row, col);
-                this.tileCollection[snake.getRow()][snake.getCol()] = this.selectedSnake;
-                this.tileCollection[initialRow][initialCol] = null;
-                this.selectedSnake = null;
-                this.repaint();
-            } else{
-                Modal.render(this,"Warning!","Invalid move");
-            }
+            snake.move(row, col);
+            snakePartInitializer(row, col);
+            scoreCounter(row, col);
+            this.tileCollection[snake.getRow()][snake.getCol()] = this.selectedSnake;
+            this.tileCollection[initialRow][initialCol] = null;
+            snakePartArrayInitializerAndRenderer(initialRow, initialCol);
+            this.selectedSnake = null;
+            this.repaint();
+
         } else {
             Modal.render(this,"Warning!","Invalid move");
+        }
+    }
+
+    /**
+     * Puts snakeUpdater into the array when it is not null and make it null again
+     * @param initialRow row where the food was eaten
+     * @param initialCol col where the food was eaten
+     */
+    private void snakePartArrayInitializerAndRenderer(int initialRow, int initialCol) {
+        if(snakeUpdater != null){
+            this.tileCollection[initialRow][initialCol] = snakeUpdater;
+            snakeUpdater = null;
+        }
+    }
+
+    /**
+     * Initializes a snake part when a food is eaten
+     * @param row being checked
+     * @param col col being checked
+     */
+    private void snakePartInitializer(int row, int col) {
+        if(this.tileCollection[row][col] != null) {
+            if (this.tileCollection[row][col].getColor().equals(Color.GREEN)){
+                snakeUpdater = new SnakeTile(row, col,Color.BLACK);
+            }
+        }
+    }
+
+    /**
+     * Checks if the snake has entered the coordinates of food and updates the field and score.
+     * @param row checked row
+     * @param col checked col
+     */
+    private void scoreCounter(int row, int col) {
+        if(this.tileCollection[row][col] != null) {
+            Tile tile = getBoardTile(row, col);
+            if(tile.getColor().equals(Color.GREEN)){
+                score = score + 15;
+                this.tileCollection[row][col] = null;
+                if(score>=300){
+                    Modal.render(this,"Congratulations","You win!");
+                    System.exit(1);
+                }
+            }
+        }
+    }
+    /**
+     * Checks if the snake has entered the coordinates of an obstacle and ends the game with a modal window.
+     * @param row checked row
+     * @param col checked col
+     */
+    private void gameEndChecker(int row, int col) {
+        if(this.tileCollection[row][col] != null) {
+            Tile tile = getBoardTile(row, col);
+            if(tile.getColor().equals(Color.RED)){
+                Modal.render(this,"GAME OVER","GAME OVER");
+                System.exit(1);
+            }
         }
     }
 }
