@@ -6,6 +6,7 @@ public class Tile {
     protected int row;
     protected int col;
     protected final Color color;
+    private boolean isHead = true;
 
 
     /**
@@ -37,6 +38,7 @@ public class Tile {
     public Color getColor() {
         return color;
     }
+
     /**
      * Method which changes the row and col of the figure.
      * @param row new row of the figure.
@@ -54,10 +56,24 @@ public class Tile {
     public int getCol() {
         return col;
     }
-    public boolean isMoveValid(int moveRow, int moveCol,Tile[][] figures) {
+
+    /**
+     * Checks if move is valid
+     * @param moveRow row being moved to
+     * @param moveCol col being moved to
+     * @return true if move is valid, false if not.
+     */
+    public boolean isMoveValid(int moveRow, int moveCol) {
         int rowCoefficient =  Math.abs(moveRow-this.row);
         int colCoefficient =  Math.abs(moveCol - this.col);
 
         return rowCoefficient == 0 && colCoefficient == 1 || rowCoefficient == 1 && colCoefficient == 0;
+    }
+    public void setHead(boolean head) {
+        isHead = head;
+    }
+
+    public boolean isHead() {
+        return isHead;
     }
 }

@@ -3,6 +3,7 @@ package tiles;
 import java.awt.*;
 
 public class SnakeTile extends Tile{
+
     /**
      * Constructor for FoodTile
      *
@@ -27,4 +28,6 @@ public class SnakeTile extends Tile{
         g.setColor(this.color);
         g.fillOval(tileX, tileY, widthOfTile, heightOfTile);
     }
+
+
 }
